@@ -94,6 +94,13 @@ function star(x, y, radius1, radius2, npoints) {
   endShape(CLOSE);
 }
 
+window.addEventListener('message', (event) => {
+  if (event.data.setFrameRate) {
+    frameRate(event.data.setFrameRate);
+  }
+});
+
+
 
 
 

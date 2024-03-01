@@ -66,6 +66,13 @@ function drawMeltingCircles() {
 function easeInOutQuart(t) {
   return t < 0.5 ? 8 * t * t * t * t : 1 - pow(-2 * t + 2, 4) / 2;
 }
+
+window.addEventListener('message', (event) => {
+  if (event.data.setFrameRate) {
+    frameRate(event.data.setFrameRate);
+  }
+});
+
   </script>
 </body>
 </html>

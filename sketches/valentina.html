@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Valentina</title>
+  <!-- Include p5.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <!-- Include p5.sound module -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+  <div id="gallery"></div>
+  <script>
+    let hearts = [];
+const numHearts = 60;
+
+function setup() {
+  createCanvas(800, 600);
+  window.parent.postMessage({ sketch: 'valentina', width: width, height: height }, '*');
+  for (let i = 0; i < numHearts; i++) {
+    hearts.push(new Heart());
+  }
+}
+
+function draw() {
+  background(255);
+  for (let i = 0; i < hearts.length; i++) {
+    hearts[i].update();
+    hearts[i].display();
+  }
+}
+
+class Heart {
+  constructor() {
+    this.x = random(width);
+    this.y = random(height);
+    this.size = random(30, 50);
+    this.speed = random(1, 3);
+    this.rotation = random(TWO_PI);
+    this.rotationSpeed = random(-0.05, 0.05);
+    this.color = random([color(255, 0, 0), color(255, 192, 203)]); // Random red or pink color
+  }
+
+  update() {
+    this.y += this.speed;
+    this.rotation += this.rotationSpeed;
+    if (this.y > height) {
+      this.y = 0;
+      this.x = random(width);
+      this.rotation = random(TWO_PI);
+      this.color = random([color(255, 0, 0), color(255, 192, 203)]); // Randomize color when heart reappears
+    }
+  }
+
+  display() {
+    fill(this.color);
+    noStroke();
+    push();
+    translate(this.x, this.y);
+    rotate(this.rotation);
+    beginShape();
+    vertex(0, -this.size * 0.5);
+    bezierVertex(this.size * 0.4, -this.size * 0.9, this.size * 0.8, -this.size * 0.1, 0, this.size * 0.5);
+    bezierVertex(-this.size * 0.8, -this.size * 0.1, -this.size * 0.4, -this.size * 0.9, 0, -this.size * 0.5);
+    endShape(CLOSE);
+    pop();
+  }
+}
+
+window.addEventListener('message', (event) => {
+  if (event.data.setFrameRate) {
+    frameRate(event.data.setFrameRate);
+  }
+});
+
+
+  </script>
+
+</body>
+</html>

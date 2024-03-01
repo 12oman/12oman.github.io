@@ -90,6 +90,12 @@ function drawHypnoticSwirl() {
     line(x1, y1, x2, y2);
   }
 }
+window.addEventListener('message', (event) => {
+  if (event.data.setFrameRate) {
+    frameRate(event.data.setFrameRate);
+  }
+});
+
 
   </script>
 </body>

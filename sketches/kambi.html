@@ -114,6 +114,13 @@
         ellipse(0, 0, ballSize + ringSize, ballSize);
       }
     }
+
+    window.addEventListener('message', (event) => {
+  if (event.data.setFrameRate) {
+    frameRate(event.data.setFrameRate);
+  }
+});
+
   </script>
 </body>
 </html>

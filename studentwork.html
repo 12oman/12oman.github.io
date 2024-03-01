@@ -11,16 +11,18 @@
 <body>
     <div id="gallery">
         <!-- Iframes will be added here through javascript-->
+
     </div>
-    <div id="preview" style="position: fixed; width: 60%; height: 60%; top: 20%; left: 20%; background-color: white; display: none;"></div>
-    <div id="close" style="position: absolute; bottom: 10px; right: 10px; width: 30px; height: 30px; background-color: red; cursor: pointer;"></div>
+    <div id="preview" style="position: fixed; width: 60%; height: 60%; top: 20%; left: 50%; background-color: rgb(0, 254, 76); display: none;"></div>
+    <div id="close" style="position: absolute; bottom: 10px; right: 10px; width: 30px; height: 30px; background-color: red; cursor: pointer;" aria-label="Close preview"></div>
+    <div id="back" style="position: absolute; bottom: 10px; left: 10px; width: 30px; height: 30px; background-color: rgb(0, 0, 255); cursor: pointer;" aria-label="back to main"></div>
     <script>
-        const sketches = ['nate.html', 'milla.html', 'alyssa.html', 'roman.html', 'bianca.html', 'kambi.html',
-    'elena.html' ];
+        const sketches = ['nate.html', 'milla.html', 'alyssa.html', 'roman.html', 'bianca.html', 'kambi.html', 'elena.html', 'alex.html', 'valentina.html', 'leo.html', 'nicole.html'];
         const gallery = document.getElementById('gallery');
         const preview = document.getElementById('preview');
         const close = document.getElementById('close');
         let sketchSizes = {};
+        
     
         sketches.forEach(sketch => {
             const iframe = document.createElement('iframe');
@@ -28,8 +30,11 @@
             iframe.width = '100%';
             iframe.height = '100%';
             iframe.scrolling = 'no';
+
             gallery.appendChild(iframe);
         });
+
+
     
         gallery.addEventListener('mouseover', (e) => {
     if (e.target.tagName === 'IFRAME' && e.target.src.includes('sketches/')) {
@@ -69,6 +74,8 @@
         sketchSizes[event.data.sketch] = { width: event.data.width, height: event.data.height };
     }
 });
+
+   
 
     </script>
     

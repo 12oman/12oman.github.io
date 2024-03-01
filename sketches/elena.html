@@ -129,6 +129,13 @@ function drawGrass() {
 function drawSun(x, y, size) {
   fill(255, 255, 0); // Yellow color for the sun
   ellipse(x, y, size, size);
-}</script>
+}
+
+window.addEventListener('message', (event) => {
+  if (event.data.setFrameRate) {
+    frameRate(event.data.setFrameRate);
+  }
+});
+</script>
 </body>
 </html>

@@ -108,6 +108,13 @@ function mouseWheel(event) {
   return false;
 }
 
+window.addEventListener('message', (event) => {
+  if (event.data.setFrameRate) {
+    frameRate(event.data.setFrameRate);
+  }
+});
+
+
   </script>
 </body>
 </html>

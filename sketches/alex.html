@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Student Work Gallery</title>
+  <!-- Include p5.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <!-- Include p5.sound module -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+  <div id="gallery"></div>
+<script>
+  let sizeOffset = 0;
+let particles = [];
+
+function setup() {
+  createCanvas(710, 400, WEBGL);
+  window.parent.postMessage({ sketch: 'alex', width: width, height: height }, '*');
+  frameRate(30);
+
+  // Create particles
+  for (let i = 0; i < 100; i++) {
+    particles.push({
+      position: createVector(random(-width / 2, width / 2), random(-height / 2, height / 2), random(-500, 500)),
+      velocity: createVector(random(-0.1, 0.1), random(-0.1, 0.1), random(-0.1, 0.1))
+    });
+  }
+}
+
+function draw() {
+  background(0);
+
+  // Update and display particles
+  for (let i = 0; i < particles.length; i++) {
+    let p = particles[i];
+
+    // Calculate a random force for gliding effect
+    let glideForce = createVector(random(-0.01, 0.01), random(-0.01, 0.01), random(-0.01, 0.01));
+
+    // Apply the glide force to particle velocity
+    p.velocity.add(glideForce);
+
+    // Update position
+    p.position.add(p.velocity);
+
+    // Bounce off the canvas edges
+    if (p.position.x < -width / 2 || p.position.x > width / 2) {
+      p.velocity.x *= -1;
+    }
+    if (p.position.y < -height / 2 || p.position.y > height / 2) {
+      p.velocity.y *= -1;
+    }
+    if (p.position.z < -500 || p.position.z > 500) {
+      p.velocity.z *= -1;
+    }
+
+    // Draw particle
+    push();
+    translate(p.position.x, p.position.y, p.position.z);
+    fill(255, 150);
+    noStroke();
+    sphere(5);
+    pop();
+  }
+
+  // Draw shapes
+  translate(-240, -100, 0);
+  normalMaterial();
+  let size = 70 + sin(sizeOffset) * 30; // Change size based on sin wave
+  push();
+  translate(mouseX - width / 2, mouseY - height / 2, random(-500, 500));
+  rotateZ(random(TWO_PI));
+  rotateX(random(TWO_PI));
+  rotateY(random(TWO_PI));
+  plane(size);
+  pop();
+
+  translate(240, 0, 0);
+  size = 70 + sin(sizeOffset) * 30; // Change size based on sin wave
+  push();
+  translate(mouseX - width / 2, mouseY - height / 2, random(-500, 500));
+  rotateZ(random(TWO_PI));
+  rotateX(random(TWO_PI));
+  rotateY(random(TWO_PI));
+  box(size, size, size);
+  pop();
+
+  translate(240, 0, 0);
+  size = 70 + sin(sizeOffset) * 30; // Change size based on sin wave
+  push();
+  translate(mouseX - width / 2, mouseY - height / 2, random(-500, 500));
+  rotateZ(random(TWO_PI));
+  rotateX(random(TWO_PI));
+  rotateY(random(TWO_PI));
+  cylinder(size, size);
+  pop();
+
+  translate(-240 * 2, 200, 0);
+  size = 70 + sin(sizeOffset) * 30; // Change size based on sin wave
+  push();
+  translate(mouseX - width / 2, mouseY - height / 2, random(-500, 500));
+  rotateZ(random(TWO_PI));
+  rotateX(random(TWO_PI));
+  rotateY(random(TWO_PI));
+  cone(size, size);
+  pop();
+
+  translate(240, 0, 0);
+  size = 70 + sin(sizeOffset) * 30; // Change size based on sin wave
+  push();
+  translate(mouseX - width / 2, mouseY - height / 2, random(-500, 500));
+  rotateZ(random(TWO_PI));
+  rotateX(random(TWO_PI));
+  rotateY(random(TWO_PI));
+  torus(size, 20);
+  pop();
+
+  translate(240, 0, 0);
+  size = 70 + sin(sizeOffset) * 30; // Change size based on sin wave
+  push();
+  translate(mouseX - width / 2, mouseY - height / 2, random(-500, 500));
+  rotateZ(random(TWO_PI));
+  rotateX(random(TWO_PI));
+  rotateY(random(TWO_PI));
+  sphere(size);
+  pop();
+
+  sizeOffset += 0.001; // Increment sizeOffset to change sizes gradually
+}
+
+window.addEventListener('message', (event) => {
+  if (event.data.setFrameRate) {
+    frameRate(event.data.setFrameRate);
+  }
+});
+
+
+</script>
+</body>
+</html>

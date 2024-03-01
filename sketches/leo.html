@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Valentina</title>
+  <!-- Include p5.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <!-- Include p5.sound module -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+  <div id="gallery"></div>
+  <script>
+    let buildingColor, structureColor, towerColor;
+let cityscapeMode = 0; // 0: Cityscape mode, 1: Clouds mode, 2: Stars mode
+let cloudOpacity = 25; // Initial cloud opacity (10% of 255)
+let twinkling = false; // Flag to control twinkling effect
+
+function setup() {
+  createCanvas(800, 600);
+  window.parent.postMessage({ sketch: 'leo', width: width, height: height }, '*');
+  background(100, 150, 100); // Cloudy green background
+  buildingColor = color(50, 100, 50); // Dark green for buildings
+  structureColor = color(80, 120, 80); // Green for structures
+  towerColor = color(120, 150, 120); // Light green for towers
+}
+
+function draw() {
+  // No need to draw continuously as we are using mouse interaction
+}
+
+function mouseDragged() {
+  if (cityscapeMode === 0) {
+    drawCityscape(mouseX, mouseY);
+  } else if (cityscapeMode === 1) {
+    drawCloud(mouseX, mouseY);
+  } else if (cityscapeMode === 2) {
+    twinkling = true; // Enable twinkling effect
+    drawStar(mouseX, mouseY);
+    twinkling = false; // Disable twinkling effect
+  }
+}
+
+function mouseReleased() {
+  if (cityscapeMode === 0) {
+    darkenColors();
+  } else if (cityscapeMode === 1) {
+    cloudOpacity -= 10; // Decrease cloud opacity
+    cloudOpacity = max(cloudOpacity, 0); // Ensure opacity doesn't go below 0
+  }
+}
+
+function keyPressed() {
+  if (key === '1') {
+    cityscapeMode = 0; // Cityscape mode
+  } else if (key === '2') {
+    cityscapeMode = 1; // Clouds mode
+    cloudOpacity = 25; // Reset cloud opacity
+  } else if (key === '3') {
+    cityscapeMode = 2; // Stars mode
+  }
+}
+
+function drawCityscape(x, y) {
+  let shapeType = floor(random(3)); // Randomly choose shape type: 0, 1, or 2
+
+  if (shapeType === 0) {
+    drawBuilding(x, y);
+  } else if (shapeType === 1) {
+    drawStructure(x, y);
+  } else {
+    drawTower(x, y);
+  }
+}
+
+function drawBuilding(x, y) {
+  let widthBuilding = random(30, 50);
+  let heightBuilding = random(200, 400);
+  noStroke();
+  fill(buildingColor);
+  rectMode(CENTER);
+  rect(x, y, widthBuilding, heightBuilding);
+}
+
+function drawStructure(x, y) {
+  let widthStructure = random(20, 30);
+  let heightStructure = random(100, 200);
+  noStroke();
+  fill(structureColor);
+  rectMode(CENTER);
+  rect(x, y, widthStructure, heightStructure);
+}
+
+function drawTower(x, y) {
+  let widthTower = random(10, 20);
+  let heightTower = random(150, 250);
+  noStroke();
+  fill(towerColor);
+  rectMode(CENTER);
+  rect(x, y, widthTower, heightTower);
+}
+
+function darkenColors() {
+  buildingColor = darkenColor(buildingColor);
+  structureColor = darkenColor(structureColor);
+  towerColor = darkenColor(towerColor);
+}
+
+function darkenColor(colorToDarken) {
+  let r = red(colorToDarken);
+  let g = green(colorToDarken);
+  let b = blue(colorToDarken);
+  let a = alpha(colorToDarken);
+  return color(r * 0.9, g * 0.9, b * 0.9, a); // Decrease brightness by multiplying with 0.9
+}
+
+function drawCloud(x, y) {
+  let size = random(50, 200);
+  noStroke();
+  fill(255, cloudOpacity); // White clouds with variable opacity
+  ellipse(x, y, size, size);
+}
+
+function drawStar(x, y) {
+  if (twinkling && random() < 0.9) { // Enable twinkling with a probability of 90%
+    let spread = random(100, 300); // More spread out
+    let size = random(5, 15); // Larger
+    let r = random(200, 255); // Red component of color
+    let g = random(200, 255); // Green component of color
+    let b = random(200, 255); // Blue component of color
+    fill(r, g, b); // No alpha for twinkling stars
+    ellipse(x + random(-spread, spread), y + random(-spread, spread), size, size);
+  }
+}
+
+window.addEventListener('message', (event) => {
+  if (event.data.setFrameRate) {
+    frameRate(event.data.setFrameRate);
+  }
+});
+
+  </script>
+
+
+</body>
+</html>
