@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Work Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Include p5.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <!-- Include p5.sound module -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+  <div id="gallery"></div>
+  <script>
+    let gridSize = 8;
+let gridSpacing;
+let circles = [];
+
+function setup() {
+  createCanvas(400, 400);
+  // send the messsage to the parent to avoid cross-origin issues
+  window.parent.postMessage({ sketch: 'nate', width: width, height: height }, '*');
+  frameRate(20);
+
+  gridSpacing = width / gridSize;
+
+  for (let x = 0; x < width; x += gridSpacing) {
+    for (let y = 0; y < height; y += gridSpacing) {
+      let size = random(20, 40);
+      let yOffset = random(-50, 50); // Introduce randomness in the initial y-coordinate
+      circles.push({ x: x, y: y + yOffset, size: size, yOffset: yOffset, colorOffset: random(1000), rippleOffset: random(1000), meltFactor: 0 });
+    }
+  }
+}
+
+function draw() {
+  background(0);
+  drawMeltingCircles();
+}
+
+function drawMeltingCircles() {
+  for (let i = 0; i < circles.length; i++) {
+    let currentCircle = circles[i];
+
+    currentCircle.meltFactor = constrain(currentCircle.meltFactor + 0.002, 0, 1);
+    let meltedSize = lerp(currentCircle.size, currentCircle.size * 1.5, currentCircle.meltFactor);
+
+    let rippleStrength = sin(frameCount * 0.02 + currentCircle.rippleOffset) * 3;
+    rippleStrength = map(rippleStrength, -1, 1, 0.2, 1);
+    
+    let easeFactor = easeInOutQuart(map(currentCircle.y, 0, height, 0, 1));
+
+    currentCircle.y = currentCircle.y + easeFactor * rippleStrength * sin(frameCount * 0.02 + currentCircle.colorOffset) * 1;
+    currentCircle.y = constrain(currentCircle.y, 0, height);
+
+    let colorStart = color(255, 0, 0); // Red
+    let colorEnd = color(255, 255, 0); // Yellow
+    let gradientColor = lerpColor(colorStart, colorEnd, map(sin(frameCount * 0.05 + currentCircle.colorOffset), -1, 1, 0, 1));
+
+    fill(gradientColor);
+    noStroke();
+    ellipse(currentCircle.x, currentCircle.y, meltedSize, meltedSize);
+  }
+}
+
+function easeInOutQuart(t) {
+  return t < 0.5 ? 8 * t * t * t * t : 1 - pow(-2 * t + 2, 4) / 2;
+}
+  </script>
+</body>
+</html>

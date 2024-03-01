@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Student Work Gallery</title>
+  <!-- Include p5.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <!-- Include p5.sound module -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+  <div id="gallery"></div>
+  <script>
+    let ellipsoidAngleX = 0;
+    let ellipsoidAngleY = 0;
+    let ballSize = 50;
+    let ringSize = 70; // Size of the rings
+    let ballSizeChange = 2; // Increased rate of change for the ball size
+    let spaceshipSpeedMultiplier = 2;
+    let spaceships = [];
+
+    function setup() {
+      createCanvas(800, 400, WEBGL);
+      window.parent.postMessage({ sketch: 'kambi', width: width, height: height }, '*');
+
+      // Initialize spaceships
+      for (let i = 0; i < 50; i++) {
+        spaceships.push({
+          x: random(-width / 4, width / 4),
+          y: random(-height / 4, height / 4),
+          speed: random(5, 15) * spaceshipSpeedMultiplier,
+          color: color(random(255), random(255), random(255)),
+          size: random(20, 60)
+        });
+      }
+    }
+
+    function draw() {
+      background(0);
+
+      // Move the origin to the center of the canvas
+      translate(0, 0);
+
+      // Draw the starry sky (optional, for the space effect)
+      drawStarrySky();
+
+      // Draw the spinning 3D ball with rings
+      push();
+      rotateX(ellipsoidAngleX);
+      rotateY(ellipsoidAngleY);
+
+      // Draw rings around the ellipsoid
+      drawRings();
+
+      // Draw the hollow ellipsoid with colored outline
+      stroke(color(random(255), random(255), random(255))); // Set stroke color
+      noFill(); // Remove fill
+      ellipsoid(ballSize, ballSize, ballSize);
+      pop();
+
+      // Adjust the ball size over time
+      ballSize += ballSizeChange;
+      if (ballSize > 100 || ballSize < 20) {
+        ballSizeChange *= -1; // Reverse the size change direction at the boundaries
+      }
+
+      // Draw all spaceships
+      for (let i = 0; i < spaceships.length; i++) {
+        drawSpaceship(spaceships[i]);
+        updateSpaceship(spaceships[i]);
+      }
+
+      // Increment the rotation angles
+      ellipsoidAngleX += 0.02;
+      ellipsoidAngleY += 0.02;
+    }
+
+    function drawStarrySky() {
+      noStroke();
+      fill(255);
+
+      for (let i = 0; i < 200; i++) {
+        let x = random(-width / 2, width / 2);
+        let y = random(-height / 2, height / 2);
+        let z = random(-500, 500);
+        ellipse(x, y, 2, 2);
+      }
+    }
+
+    function drawSpaceship(spaceship) {
+      fill(spaceship.color);
+      push();
+      translate(spaceship.x, spaceship.y);
+      box(spaceship.size, spaceship.size / 2, spaceship.size / 4);
+      pop();
+    }
+
+    function updateSpaceship(spaceship) {
+      // Move the spaceship horizontally
+      spaceship.x += spaceship.speed;
+      if (spaceship.x > width / 2 + 200) {
+        spaceship.x = -width / 2 - 200;
+        spaceship.y = random(-height / 4, height / 4);
+        spaceship.speed = random(5, 15) * spaceshipSpeedMultiplier;
+        spaceship.color = color(random(255), random(255), random(255));
+        spaceship.size = random(20, 60);
+      }
+    }
+
+    function drawRings() {
+      // Draw rings around the ellipsoid
+      for (let i = 0; i < 360; i += 20) {
+        ellipse(0, 0, ballSize + ringSize, ballSize);
+      }
+    }
+  </script>
+</body>
+</html>

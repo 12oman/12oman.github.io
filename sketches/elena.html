@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Work Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Include p5.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <!-- Include p5.sound module -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+  <div id="gallery"></div>
+  <script>
+    let cloud1X = 50;
+let cloud2X = 150;
+
+const Y_AXIS = 1; // Define Y_AXIS variable
+let balloonX = 100; // Initial x-coordinate for the balloon
+let balloonY = 100; // Initial y-coordinate for the balloon
+let dragging = false; // Flag to track if balloon is being dragged
+
+function setup() {
+  createCanvas(200, 200);
+  window.parent.postMessage({ sketch: 'elena', width: width, height: height }, '*');
+  drawSky();
+  drawSun(150, 50, 40);
+  drawGrass();
+  drawCloud(cloud1X, 50);
+  drawCloud(cloud2X, 100);
+
+  // Add event listeners to handle mouse interactivity
+  canvas.addEventListener('mousedown', mousePressed);
+  canvas.addEventListener('mousemove', mouseDragged);
+  canvas.addEventListener('mouseup', mouseReleased);
+}
+
+function draw() {
+  background(220);
+  drawSky();
+  drawSun(150, 50, 40);
+  drawGrass();
+  drawCloud(cloud1X, 50);
+  drawCloud(cloud2X, 100);
+  
+  if (!dragging) {
+    // Update balloon position to hover up and down
+    balloonX = 100;
+    balloonY = 100 + sin(frameCount * 0.05) * 10;
+  }
+
+  drawBalloon(balloonX, balloonY, 50, 'red'); // Draw balloon at updated position
+}
+
+function mousePressed() {
+  // Check if mouse is within the balloon bounds
+  if (dist(mouseX, mouseY, balloonX, balloonY) < 25) {
+    dragging = true; // Start dragging the balloon
+  }
+}
+
+function mouseDragged() {
+  if (dragging) {
+    balloonX = mouseX;
+    balloonY = mouseY;
+  }
+}
+
+function mouseReleased() {
+  dragging = false; // Stop dragging the balloon
+}
+
+function drawSky() {
+  let topColor = color(135, 206, 235); // Light blue color at the top
+  let bottomColor = color(70, 130, 180); // Darker blue color at the bottom
+  setGradient(0, 0, width, height, topColor, bottomColor, Y_AXIS);
+}
+
+function setGradient(x, y, w, h, c1, c2, axis) {
+  noFill();
+  
+  if (axis === Y_AXIS) {
+    // Top to bottom gradient
+    for (let i = y; i <= y + h; i++) {
+      let inter = map(i, y, y + h, 0, 1);
+      let c = lerpColor(c1, c2, inter);
+      stroke(c);
+      line(x, i, x + w, i);
+    }
+  }
+}
+
+function drawCloud(x, y) {
+  noStroke();
+  fill(255); // White color for clouds
+  ellipse(x, y, 30, 30);
+  ellipse(x + 20, y, 30, 30);
+  ellipse(x + 40, y, 30, 30);
+  ellipse(x + 15, y - 15, 30, 30);
+  ellipse(x + 35, y - 15, 30, 30);
+}
+
+function drawBalloon(x, y, size, color) {
+  noStroke();
+  
+  // Draw balloon string
+  fill('black'); // Changed color to black
+  rect(x - 1, y + size / 2, 2, 50);
+
+  // Draw balloon body
+  fill(color);
+  ellipse(x, y, size, size);
+
+  // Draw balloon neck
+  fill(color);
+  rect(x - 5, y + size / 2, 10, 20, 5);
+  
+  // Draw balloon string
+  fill(color);
+  triangle(x, y + size / 2, x - 10, y + size * 2, x + 10, y + size * 2);
+}
+
+function drawGrass() {
+  let topColor = color(0, 100, 0); // Dark green color for the top of the grass
+  let bottomColor = color(0, 255, 0); // Light green color for the bottom of the grass
+  setGradient(0, 170, width, 30, topColor, bottomColor, Y_AXIS);
+}
+
+function drawSun(x, y, size) {
+  fill(255, 255, 0); // Yellow color for the sun
+  ellipse(x, y, size, size);
+}</script>
+</body>
+</html>

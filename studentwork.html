@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Work</title>
+    <link rel="stylesheet" href="style.css"> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+    <div id="gallery">
+        <!-- Iframes will be added here through javascript-->
+    </div>
+    <div id="preview" style="position: fixed; width: 60%; height: 60%; top: 20%; left: 20%; background-color: white; display: none;"></div>
+    <div id="close" style="position: absolute; bottom: 10px; right: 10px; width: 30px; height: 30px; background-color: red; cursor: pointer;"></div>
+    <script>
+        const sketches = ['nate.html', 'milla.html', 'alyssa.html', 'roman.html', 'bianca.html', 'kambi.html',
+    'elena.html' ];
+        const gallery = document.getElementById('gallery');
+        const preview = document.getElementById('preview');
+        const close = document.getElementById('close');
+        let sketchSizes = {};
+    
+        sketches.forEach(sketch => {
+            const iframe = document.createElement('iframe');
+            iframe.src = `sketches/${sketch}`;
+            iframe.width = '100%';
+            iframe.height = '100%';
+            iframe.scrolling = 'no';
+            gallery.appendChild(iframe);
+        });
+    
+        gallery.addEventListener('mouseover', (e) => {
+    if (e.target.tagName === 'IFRAME' && e.target.src.includes('sketches/')) {
+        const sketchName = e.target.src.split('/').pop().split('.').shift(); // Extract the sketch name from the URL
+        const dimensions = sketchSizes[sketchName];
+
+        if (dimensions) {
+            const clone = e.target.cloneNode(true);
+            clone.style.width = `${dimensions.width}px`;
+            clone.style.height = `${dimensions.height}px`;
+            clone.style.margin = '0';
+            clone.style.border = '0';
+            // adjust the preview size also
+            preview.style.width = `${dimensions.width}px`;
+            preview.style.height = `${dimensions.height}px`;
+            preview.innerHTML = ''; // Clear previous content
+            preview.appendChild(clone); // Add the cloned iframe
+            preview.style.padding = '0';
+            preview.style.margin = '0';
+            preview.style.border = '0';
+ 
+            preview.style.display = 'block'; // Show the preview area
+        }
+    }
+});
+
+    
+        close.addEventListener('click', () => {
+            preview.style.display = 'none';
+            preview.innerHTML = ''; // Clear the preview content
+        });
+
+        
+
+    window.addEventListener('message', (event) => {
+        if (event.data.sketch && event.data.width && event.data.height) {
+        sketchSizes[event.data.sketch] = { width: event.data.width, height: event.data.height };
+    }
+});
+
+    </script>
+    
+
+
+    
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Student Work Gallery</title>
+  <!-- Include p5.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <!-- Include p5.sound module -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+  <div id="gallery"></div>
+  <script>
+    function setup() {
+    createCanvas(800, 400);
+    // send the messsage to the parent to avoid cross-origin issues
+    window.parent.postMessage({ sketch: 'milla', width: width, height: height }, '*');
+    }
+    
+   
+    let rainbowAngle = 0; // Initial angle of the rainbow
+    let waveHeight = 30; // Height of the wave (reduced for smaller rainbow)
+    let waveFrequency = 0.02; // Frequency of the wave
+    let waveSpeed = 0.005; // Speed of the wave (even slower)
+    
+    // Variables to control cloud movement
+    let cloudSpeed = 0.5; // Faster speed of cloud movement
+    let clouds = []; // Array to store cloud objects
+    
+    // Variables for exploding pink colors
+    let explosions = []; // Array to store explosion objects
+    let numExplosions = 10; // Number of explosions
+    let explosionSize = 50; // Initial size of explosions
+    let explosionSpeed = 3; // Speed of explosion growth
+    
+    function setup() {
+      createCanvas(800, 600);
+    
+      // Initialize clouds
+      for (let i = 0; i < 5; i++) {
+        let x = random(width); // Random x position
+        let y = random(height / 3); // Random y position within the top third of the canvas
+        let w = random(80, 120); // Random width
+        let h = random(50, 80); // Random height
+        let cloud = { x: x, y: y, w: w, h: h }; // Cloud object
+        clouds.push(cloud); // Add cloud to array
+      }
+    
+      // Initialize explosions
+      for (let i = 0; i < numExplosions; i++) {
+        let explosion = {
+          x: random(width),
+          y: random(height / 2, height), // Explosions appear below the middle of the canvas
+          size: explosionSize // Initial size of explosions
+        };
+        explosions.push(explosion);
+      }
+    }
+    
+    function draw() {
+      background(0); // Black background
+    
+      drawSky(); // Draw the pink to orange ombre sky
+      drawClouds(); // Draw some clouds
+      drawExplosions(); // Draw exploding pink colors
+      drawRainbow(); // Draw the wavy rainbow
+    }
+    
+    function drawSky() {
+      // Pink to orange ombre sky
+      let fromColor = color(255, 192, 203); // Light pink
+      let toColor = color(255, 165, 0); // Orange
+      for (let y = 0; y < height; y++) {
+        let interColor = lerpColor(fromColor, toColor, y / height);
+        stroke(interColor);
+        line(0, y, width, y);
+      }
+    }
+    
+    function drawClouds() {
+      // Update and draw each cloud
+      for (let i = 0; i < clouds.length; i++) {
+        // Move cloud horizontally
+        clouds[i].x += cloudSpeed;
+    
+        // If cloud moves offscreen, reset its position
+        if (clouds[i].x > width) {
+          clouds[i].x = -clouds[i].w;
+          clouds[i].y = random(height / 3);
+        }
+    
+        // Draw the cloud
+        drawCloud(clouds[i].x, clouds[i].y, clouds[i].w, clouds[i].h);
+      }
+    }
+    
+    function drawCloud(x, y, w, h) {
+      // Set the cloud color
+      let cloudColor = color(255); // White cloud color
+      fill(cloudColor);
+    
+      // Draw the main body of the cloud
+      beginShape();
+      for (let i = 0; i < 10; i++) { // Draw 10 ellipses to form the cloud
+        let angle = map(i, 0, 9, 0, TWO_PI); // Angle around the center of the cloud
+        let xOffset = cos(angle) * (w / 2); // X offset from the center
+        let yOffset = sin(angle) * (h / 2); // Y offset from the center
+        vertex(x + xOffset, y + yOffset); // Add vertex
+      }
+      endShape(CLOSE); // Close the shape
+    
+      // Draw puffy clouds
+      let numBumps = 8; // Number of puffs in the cloud
+      let bumpSize = 20; // Size of each puff
+      for (let i = 0; i < numBumps; i++) {
+        let xOffset = map(i, 0, numBumps - 1, -w / 2, w / 2); // X offset within cloud bounds
+        let yOffset = random(-h / 4, h / 4); // Random y offset
+        ellipse(x + xOffset, y + yOffset, bumpSize, bumpSize); // Draw puff
+      }
+    
+      // Add glitter effect
+      let glitterColor = color(192, 192, 192); // Silver glitter color
+      fill(glitterColor);
+      for (let i = 0; i < 20; i++) { // Draw 20 glitter dots
+        let glitterX = random(x - w / 2, x + w / 2); // Random x position within cloud bounds
+        let glitterY = random(y - h / 2, y + h / 2); // Random y position within cloud bounds
+        ellipse(glitterX, glitterY, 5, 5); // Draw glitter dot
+      }
+    }
+    
+    function drawRainbow() {
+      // Increment rainbow angle over time
+      rainbowAngle += waveSpeed;
+    
+      // Define rainbow colors
+      let colors = [
+        color(255, 0, 0),   // Red
+        color(255, 127, 0), // Orange
+        color(255, 255, 0), // Yellow
+        color(0, 255, 0),   // Green
+        color(0, 0, 255),   // Blue
+        color(75, 0, 130),  // Indigo
+        color(148, 0, 211)  // Violet
+      ];
+    
+      // Draw rainbow arches
+      let arcWidth = width / colors.length;
+      for (let i = 0; i < colors.length; i++) {
+        fill(colors[i]);
+        noStroke();
+        let startAngle = PI + sin(rainbowAngle + i * waveFrequency) * waveHeight; // Adjust start angle with sine wave
+        let endAngle = TWO_PI + sin(rainbowAngle + i * waveFrequency) * waveHeight; // Adjust end angle with sine wave
+        arc(width / 2, height, width - i * arcWidth, height + 100, startAngle, endAngle);
+      }
+    }
+    
+    function drawExplosions() {
+      // Update and draw each explosion
+      for (let i = 0; i < explosions.length; i++) {
+        // Increase explosion size over time
+        explosions[i].size += explosionSpeed; // Faster growth rate
+    
+        // Draw the explosion
+        fill(255, 192, 203); // Use pink color
+        ellipse(explosions[i].x, explosions[i].y, explosions[i].size, explosions[i].size);
+    
+        // If explosion size exceeds a certain threshold, reset its size and position
+        if (explosions[i].size > explosionSize * 5) {
+          explosions[i].size = explosionSize;
+          explosions[i].x = random(width);
+          explosions[i].y = random(height / 2, height);
+        }
+      }
+    }
+    
+  </script>
+</body>
+</html>
