@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Student Work Gallery</title>
+  <!-- Include p5.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <!-- Include p5.sound module -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+  <div id="gallery"></div>
+<script>
+  let cloudX1, cloudX2, cloudX3;
+let speed1, speed2, speed3;
+let stars = [];
+let numStars = 50;
+let shootingStars = [];
+let numShootingStars = 5;
+let buildingHeight1 = 250;
+let buildingHeight2 = 300;
+let buildingHeight3 = 200;
+
+function setup() {
+  createCanvas(600, 600);
+  // send the messsage to the parent to avoid cross-origin issues
+  window.parent.postMessage({ sketch: 'ramona', width: width, height: height }, '*');
+  cloudX1 = random(50, width - 50); // Adjusted initial x position for cloud 1
+  cloudX2 = random(50, width - 50); // Adjusted initial x position for cloud 2
+  cloudX3 = random(50, width - 50); // Adjusted initial x position for cloud 3
+  speed1 = random(1, 2); // Adjusted speed for cloud 1
+  speed2 = random(1, 2); // Adjusted speed for cloud 2
+  speed3 = random(1, 2); // Adjusted speed for cloud 3
+
+  // Initialize stars
+  for (let i = 0; i < numStars; i++) {
+    stars.push(createVector(random(width), random(height)));
+  }
+
+  // Initialize shooting stars
+  for (let i = 0; i < numShootingStars; i++) {
+    let speed = random(3, 5);
+    let angle = radians(45); // Convert angle to radians
+    let vx = speed * cos(angle); // Calculate x velocity
+    let vy = speed * sin(angle); // Calculate y velocity
+    let size = random(5, 20); // Random size between 5 and 15
+    shootingStars.push({
+      x: random(width),
+      y: random(height),
+      vx: vx,
+      vy: vy,
+      size: size // Store size
+    });
+  }
+}
+
+function draw() {
+  // Draw gradient background
+  background(0); // Start with black background
+  for (let y = 0; y < height; y++) {
+    let inter = map(y, 0, height, 0, 1);
+    let c = lerpColor(color(0, 0, 255), color(255, 192, 203), inter); // Blue to pink gradient
+    stroke(c);
+    line(0, y, width, y);
+  }
+
+  // Draw moon
+  drawMoon();
+
+  // Draw city buildings
+  drawBuildings();
+
+  // Update cloud positions
+  cloudX1 += speed1;
+  cloudX2 += speed2;
+  cloudX3 += speed3;
+
+  // Check if clouds reach the edges and reverse direction
+  if (cloudX1 >= width + 50 || cloudX1 <= -50) {
+    speed1 *= -1;
+  }
+  if (cloudX2 >= width + 50 || cloudX2 <= -50) {
+    speed2 *= -1;
+  }
+  if (cloudX3 >= width + 50 || cloudX3 <= -50) {
+    speed3 *= -1;
+  }
+
+  // Draw clouds
+  drawCloud(cloudX1, 100, 70);
+  drawCloud(cloudX2, 200, 90);
+  drawCloud(cloudX3, 300, 110);
+
+  // Draw stars
+  drawStars();
+
+  // Draw and update shooting stars
+  drawShootingStars();
+}
+
+function drawCloud(x, y, size) {
+  let cloudColor = color(255);
+  noStroke();
+  fill(cloudColor);
+  ellipse(x, y, size, size * 0.7);
+  ellipse(x - size * 0.4, y, size * 0.6, size * 0.5);
+  ellipse(x + size * 0.4, y, size * 0.6, size * 0.5);
+  ellipse(x - size * 0.2, y - size * 0.3, size * 0.6, size * 0.5);
+  ellipse(x + size * 0.2, y - size * 0.3, size * 0.6, size * 0.5);
+}
+
+function drawStars() {
+  fill(255);
+  for (let i = 0; i < numStars; i++) {
+    let pos = stars[i];
+    ellipse(pos.x, pos.y, 2, 2);
+  }
+}
+
+function drawShootingStars() {
+  fill(255);
+  for (let i = 0; i < numShootingStars; i++) {
+    let star = shootingStars[i];
+    drawDiamond(star.x, star.y, star.size, star.size); // Use size from shootingStars array
+    star.x += star.vx;
+    star.y += star.vy;
+    if (star.x > width || star.y > height) {
+      star.x = random(-20, 0);
+      star.y = random(height);
+    }
+  }
+}
+
+function drawDiamond(x, y, w, h) {
+  beginShape();
+  vertex(x, y - h / 2);
+  vertex(x + w / 2, y);
+  vertex(x, y + h / 2);
+  vertex(x - w / 2, y);
+  endShape(CLOSE);
+}
+
+function drawMoon() {
+  fill(255, 255, 255, 204); // Pale yellow with 80% opacity
+  noStroke();
+  arc(width - 50, 50, 80, 80, PI + HALF_PI, TWO_PI + HALF_PI, OPEN);
+}
+
+function drawBuildings() {
+  // Draw buildings
+  fill(100, 100, 100, 100); // Transparent gray color
+  rect(50, height - buildingHeight1, 100, buildingHeight1); // Building 1
+  rect(200, height - buildingHeight2, 120, buildingHeight2); // Building 2
+  rect(350, height - buildingHeight3, 80, buildingHeight3); // Building 3
+
+  // Draw windows
+  fill(255, 255, 180); // Default white color for windows
+  drawWindows(50, height - buildingHeight1, 100, buildingHeight1, 5, 4); // Building 1
+  drawWindows(200, height - buildingHeight2, 120, buildingHeight2, 6, 5); // Building 2
+  drawWindows(350, height - buildingHeight3, 80, buildingHeight3, 4, 3); // Building 3
+}
+
+function drawWindows(x, y, w, h, cols, rows) {
+  let windowWidth = w / cols;
+  let windowHeight = h / rows;
+
+  for (let i = 0; i < cols; i++) {
+    for (let j = 0; j < rows; j++) {
+      let windowX = x + i * windowWidth;
+      let windowY = y + j * windowHeight;
+      rect(windowX, windowY, windowWidth * 0.8, windowHeight * 0.8);
+    }
+  }
+}
+</script>
+</body>
+</html>
